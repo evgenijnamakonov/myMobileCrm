@@ -1,0 +1,3 @@
+rootProject.name = 'myMobileCrm'
+
+include ':app'
