@@ -1,36 +1,47 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import { NavigationActions } from 'react-navigation'
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as Actions from "../actions/actions";
 
-export default class Splash extends Component {
+class Splash extends Component {
 
-    constructor( props ) {
-        super( props );
+    constructor(props) {
+        super(props);
     }
 
     componentDidMount() {
-        AsyncStorage.getItem( 'token' ).then( ( token ) => {
+        AsyncStorage.getItem('token').then((token) => {
             if ( token ) {
-                this.reset( 'Scanner' )
+                this.props.setToken(token);
+                this.reset('MainScreen')
             }
             else {
-                this.reset( 'Login' )
+                this.reset('Login')
             }
-        } );
-        this.reset( 'Login' )
+        });
     }
 
-    reset( routeName ) {
-        this.props.navigation.dispatch( NavigationActions.reset( {
+    reset(routeName) {
+        this.props.navigation.dispatch(NavigationActions.reset({
                 index: 0,
-                actions: [NavigationActions.navigate( { routeName: routeName } )],
-            } )
+                actions: [NavigationActions.navigate({ routeName: routeName })],
+            })
         );
     }
 
     render() {
-        return (
-            <View />
-        )
+        return null;
     }
 }
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(Actions, dispatch);
+}
+
+function mapStateToProps(state) {
+    return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Splash);

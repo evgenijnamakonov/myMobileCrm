@@ -1,11 +1,14 @@
 import React from 'react';
-import {StackNavigator} from 'react-navigation';
+import { StackNavigator } from 'react-navigation';
+import { theme } from "./conf/colors";
+import { fonts } from "./conf/fonts";
 
 import Registration from './screen/Registration';
 import Login from './screen/Login';
+import MainScreen from './screen/MainScreen';
 import Splash from './screen/Splash';
 
-export const Root = StackNavigator({
+export const Root = StackNavigator( {
     Splash: {
         screen: Splash,
         navigationOptions: {
@@ -23,11 +26,25 @@ export const Root = StackNavigator({
         navigationOptions: {
             title: 'Авторизация',
         },
+    },
+    MainScreen: {
+        screen: MainScreen,
+        navigationOptions: {
+            title: 'Главный экран',
+        },
     }
 }, {
     navigationOptions: {
-        headerStyle: {backgroundColor: 'rgb(80, 157, 63)', height: 64,},
-        headerTitleStyle: {color: '#fff', fontWeight: '200'},
-        headerTintColor: '#fff'
+        headerStyle: {
+            backgroundColor: theme.accent,
+            height: 64,
+            elevation: 0,
+        },
+        headerTitleStyle: {
+            color: theme.fontPrimary,
+            fontFamily: fonts.fontFamily,
+            fontWeight: '200',
+        },
+        headerTintColor: theme.primary
     }
 } );

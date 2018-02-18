@@ -1,5 +1,7 @@
 'use strict';
 
 export const initialState = {
-    token: ''
+    store: {
+        token: ''
+    }
 };
