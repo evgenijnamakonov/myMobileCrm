@@ -55,5 +55,14 @@ export const styles = StyleSheet.create( {
         paddingBottom: 18,
         backgroundColor: colors.primary,
         alignItems: 'center'
+    },
+    accountIcon: {
+        fontSize: 28,
+        color: colors.primary
+    },
+    accountBtn: {
+        marginTop: 4,
+        padding: 8,
+        paddingHorizontal: 12,
     }
 } );

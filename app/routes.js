@@ -5,6 +5,7 @@ import { fonts } from "./conf/fonts";
 
 import Registration from './screen/Registration';
 import Login from './screen/Login';
+import Settings from './screen/Settings';
 import MainScreen from './screen/MainScreen';
 import Splash from './screen/Splash';
 
@@ -25,6 +26,12 @@ export const Root = StackNavigator( {
         screen: Login,
         navigationOptions: {
             title: 'Авторизация',
+        },
+    },
+    Settings: {
+        screen: Settings,
+        navigationOptions: {
+            title: 'Аккаунт',
         },
     },
     MainScreen: {
