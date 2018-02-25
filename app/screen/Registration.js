@@ -48,6 +48,9 @@ class Registration extends Component {
     saveToken(token) {
         AsyncStorage.setItem('token', token).then(() => {
             this.props.setToken(token);
+            // firebase.database().ref().child('apps').push({
+            //     [token]: {}
+            // });
             this.setState({ isLoading: false });
             this.props.navigation.dispatch(NavigationActions.reset({
                     index: 0,

@@ -7,6 +7,16 @@ export const styles = StyleSheet.create( {
         width: '100%',
         height: '100%',
     },
+    cardListContainer: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#fff',
+        alignItems: 'center'
+    },
+    cardListWrapper: {
+        width: '100%',
+        alignItems: 'center'
+    },
     loginContainer: {
         flex: 1,
         paddingTop: 64,

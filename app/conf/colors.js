@@ -1,6 +1,7 @@
 export const theme = {
     primary: '#ffffff',
-    accent: '#336666',
+    accent: '#58b0a7',
+    btnColor: '#5918d6',
     fontPrimary: '#fff',
-    dark: '#336666'
+    dark: '#58b0a7'
 };

@@ -7,6 +7,7 @@ import Registration from './screen/Registration';
 import Login from './screen/Login';
 import Settings from './screen/Settings';
 import MainScreen from './screen/MainScreen';
+import CreateApp from './screen/CreateApp';
 import Splash from './screen/Splash';
 
 export const Root = StackNavigator( {
@@ -38,6 +39,12 @@ export const Root = StackNavigator( {
         screen: MainScreen,
         navigationOptions: {
             title: 'Главный экран',
+        },
+    },
+    CreateApp: {
+        screen: CreateApp,
+        navigationOptions: {
+            title: 'Создание приложения',
         },
     }
 }, {
