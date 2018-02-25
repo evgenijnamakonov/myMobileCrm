@@ -24,6 +24,7 @@ class MainScreen extends Component {
         let listener = this.database.ref('apps/' + this.props.token);
 
         listener.on('value', (snapshot) => {
+            console.log(snapshot)
             let cards = [];
             if ( snapshot._value ) {
                 cards.push(snapshot._value);
@@ -63,7 +64,7 @@ class MainScreen extends Component {
                         return (
                             Object.keys(item).map((child) => {
                                 return (
-                                    <Card name = {item[child].name} />
+                                    <Card navigation = {this.props.navigation} name = {item[child].name} />
                                 )
                             }))
                     }}

@@ -70,6 +70,10 @@ export const styles = StyleSheet.create( {
         fontSize: 28,
         color: colors.primary
     },
+    settingsIcon: {
+        fontSize: 24,
+        color: colors.primary
+    },
     accountBtn: {
         marginTop: 4,
         padding: 8,

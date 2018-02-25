@@ -8,6 +8,8 @@ import Login from './screen/Login';
 import Settings from './screen/Settings';
 import MainScreen from './screen/MainScreen';
 import CreateApp from './screen/CreateApp';
+import AppSettings from './screen/AppSettings';
+import Application from './screen/Application';
 import Splash from './screen/Splash';
 
 export const Root = StackNavigator( {
@@ -46,13 +48,22 @@ export const Root = StackNavigator( {
         navigationOptions: {
             title: 'Создание приложения',
         },
+    },
+    AppSettings: {
+        screen: AppSettings,
+        navigationOptions: {
+            title: 'Настройки',
+        },
+    },
+    Application: {
+        screen: Application,
     }
 }, {
     navigationOptions: {
         headerStyle: {
             backgroundColor: theme.accent,
             height: 64,
-            elevation: 0,
+            elevation: 3,
         },
         headerTitleStyle: {
             color: theme.fontPrimary,

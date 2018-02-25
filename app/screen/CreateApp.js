@@ -20,14 +20,13 @@ class CreateApp extends Component {
 
     create() {
         let apps = this.database.ref().child('apps').child(this.props.token);
-        let push = apps.push({
+        apps.push({
             name:this.state.name
         });
-        console.log(push)
+        this.props.navigation.navigate('MainScreen')
     }
 
     render() {
-        console.log(this.props.token)
         return(
             <View style = {style.container}>
                 <TextInput
@@ -56,7 +55,8 @@ const style = StyleSheet.create({
     },
     saveBtn: {
         width: 180,
-        height: 50,
+        height: 42,
+        borderRadius: 4,
         position: 'absolute',
         bottom: 12,
         left: '26%',
