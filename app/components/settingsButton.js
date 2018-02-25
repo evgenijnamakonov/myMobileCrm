@@ -10,7 +10,7 @@ export default class SettingsButton extends Component {
     }
 
     toSettings() {
-        this.props.navigation.navigate('AppSettings');
+        this.props.navigation.navigate('AppSettings', {id: this.props.navigation.state.params.id});
     }
 
     render() {

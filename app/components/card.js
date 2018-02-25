@@ -8,13 +8,13 @@ export default class Card extends Component {
     }
 
     openCard() {
-        this.props.navigation.navigate('Application', {title: this.props.name})
+        this.props.navigation.navigate('Application', {title: this.props.item.name, id: this.props.id})
     }
 
     render() {
         return(
             <TouchableOpacity onPress = {() => this.openCard()} style = {style.container}>
-                <Text>{this.props.name}</Text>
+                <Text>{this.props.item.name}</Text>
             </TouchableOpacity>
         )
     }

@@ -10,12 +10,14 @@ export default class Application extends Component {
 
     static navigationOptions = ({ navigation }) => ({
         title: navigation.state.params.title,
-        headerRight: <SettingsButton navigation = {navigation} />
+        headerRight: <SettingsButton id = {navigation.state.params.id} navigation = {navigation} />
     });
 
     render() {
         return(
-            <View></View>
+            <View>
+
+            </View>
         )
     }
 }

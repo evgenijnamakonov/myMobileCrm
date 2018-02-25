@@ -29,11 +29,8 @@ class CreateApp extends Component {
     render() {
         return(
             <View style = {style.container}>
-                <TextInput
-                    style = {style.nameInput}
-                    placeholder = 'Укажите название сайта'
-                    onChangeText = {text => this.setState({name: text})}
-                />
+                <TextInput style = {style.nameInput} placeholder = 'Укажите название приложения/сайта'
+                    onChangeText = {text => this.setState({name: text})} />
                 <TouchableOpacity onPress = {() => this.create()} style = {style.saveBtn}>
                     <Text style = {style.saveBtnLabel}>Создать</Text>
                 </TouchableOpacity>
@@ -46,6 +43,7 @@ const style = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
+        backgroundColor: '#fff',
         paddingHorizontal: 12,
         paddingVertical: 8,
     },

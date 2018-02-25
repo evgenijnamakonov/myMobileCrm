@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 
 export default class Settings extends Component {
 
@@ -9,7 +9,8 @@ export default class Settings extends Component {
 
     render() {
         return(
-            <View></View>
+            <View>
+            </View>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StatusBar, TouchableOpacity, Text, StyleSheet, FlatList } from 'react-native';
+import { View, StatusBar, TouchableOpacity, ActivityIndicator, Text, StyleSheet, FlatList } from 'react-native';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as Actions from "../actions/actions";
@@ -24,18 +24,18 @@ class MainScreen extends Component {
         let listener = this.database.ref('apps/' + this.props.token);
 
         listener.on('value', (snapshot) => {
-            console.log(snapshot)
             let cards = [];
             if ( snapshot._value ) {
                 cards.push(snapshot._value);
             }
-            this.setState({ cards: cards })
+            this.setState({ cards: cards, isLoading: false })
         });
 
     }
 
     state = {
-        cards: []
+        cards: [],
+        isLoading: true,
     };
 
     static navigationOptions = ({ navigation }) => ({
@@ -64,7 +64,7 @@ class MainScreen extends Component {
                         return (
                             Object.keys(item).map((child) => {
                                 return (
-                                    <Card navigation = {this.props.navigation} name = {item[child].name} />
+                                    <Card navigation = {this.props.navigation} item = {item[child]} id = {child} />
                                 )
                             }))
                     }}
@@ -81,13 +81,23 @@ class MainScreen extends Component {
         )
     }
 
+    renderActivityIndicator() {
+        return (
+            <View style = {local.placeholderContainer}>
+                <ActivityIndicator size = 'small' color = {colors.btnColor}/>
+            </View>
+        )
+    }
+
     render() {
         return (
             <View style = {styles.cardListContainer}>
                 <StatusBar backgroundColor = {theme.dark} />
                 {
-                    this.state.cards[0]
+                    this.state.cards[0] && !this.state.isLoading
                         ? this.renderCardList()
+                        : this.state.isLoading
+                        ? this.renderActivityIndicator()
                         : this.renderPlaceholder()
                 }
                 {this.renderActionButton()}
