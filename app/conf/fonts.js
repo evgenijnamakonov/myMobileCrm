@@ -13,5 +13,6 @@ export const fonts = {
         primary: 14,
         small: 11,
         big: 16,
+        giant: 20,
     }
 };

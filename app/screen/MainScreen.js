@@ -16,10 +16,11 @@ class MainScreen extends Component {
 
     constructor(props) {
         super(props);
-        this.database = firebase.database();
     }
 
     componentDidMount() {
+
+        this.database = firebase.database();
 
         let listener = this.database.ref('apps/' + this.props.token);
 
@@ -30,7 +31,6 @@ class MainScreen extends Component {
             }
             this.setState({ cards: cards, isLoading: false })
         });
-
     }
 
     state = {

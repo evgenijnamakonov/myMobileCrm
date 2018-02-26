@@ -6,11 +6,22 @@ import { bindActionCreators } from "redux";
 import * as Actions from "../actions/actions";
 import { theme as colors } from "../conf/colors";
 
+import { NavigationActions } from 'react-navigation'
+
+const resetAction = NavigationActions.reset({
+    index: 0,
+    actions: [
+        NavigationActions.navigate({ routeName: 'MainScreen' })
+    ]
+});
+
 class CreateApp extends Component {
 
     constructor(props) {
         super(props);
+    }
 
+    componentDidMount() {
         this.database = firebase.database()
     }
 
@@ -21,9 +32,9 @@ class CreateApp extends Component {
     create() {
         let apps = this.database.ref().child('apps').child(this.props.token);
         apps.push({
-            name:this.state.name
+            name:this.state.name,
         });
-        this.props.navigation.navigate('MainScreen')
+        this.props.navigation.dispatch(resetAction)
     }
 
     render() {

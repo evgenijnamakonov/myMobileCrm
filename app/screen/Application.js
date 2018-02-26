@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import SettingsButton from "../components/settingsButton";
+import { theme as colors } from "../conf/colors";
 
 export default class Application extends Component {
 
@@ -15,9 +16,16 @@ export default class Application extends Component {
 
     render() {
         return(
-            <View>
-
+            <View style = {local.container}>
             </View>
         )
     }
 }
+
+const local = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#fff',
+    }
+});
