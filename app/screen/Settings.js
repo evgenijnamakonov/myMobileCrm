@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import QuitButton from "../components/quitButton";
 
 export default class Settings extends Component {
 
@@ -7,10 +8,22 @@ export default class Settings extends Component {
         super(props)
     }
 
+    static navigationOptions = ({ navigation }) => ({
+        headerRight: <QuitButton navigation = {navigation} />
+    });
+
     render() {
         return(
-            <View>
+            <View style = {local.container}>
             </View>
         )
     }
 }
+
+const local = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#fff',
+    }
+});

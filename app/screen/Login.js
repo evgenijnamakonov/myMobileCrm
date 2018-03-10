@@ -65,7 +65,7 @@ class Login extends Component {
             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((credential) => {
                 this.showToast('Вы успешно авторизовались');
                 this.setState({ isEmailValid: true, isPasswordValid: true });
-                this.saveToken()
+                this.saveToken(credential._user.uid)
             }).catch((ExtendedError) => {
                 switch ( ExtendedError.code ) {
                     case 'auth/invalid-email':

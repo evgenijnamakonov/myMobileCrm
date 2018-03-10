@@ -34,13 +34,13 @@ export const Root = StackNavigator( {
     Settings: {
         screen: Settings,
         navigationOptions: {
-            title: 'Аккаунт',
+            title: 'Профиль',
         },
     },
     MainScreen: {
         screen: MainScreen,
         navigationOptions: {
-            title: 'Главный экран',
+            title: 'My Mobile CRM',
         },
     },
     CreateApp: {
@@ -68,7 +68,7 @@ export const Root = StackNavigator( {
         headerTitleStyle: {
             color: theme.fontPrimary,
             fontFamily: fonts.fontFamily,
-            fontWeight: '200',
+            fontWeight: '500',
         },
         headerTintColor: theme.primary
     }
