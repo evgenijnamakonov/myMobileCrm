@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, Linking, TouchableOpacity } from 'react-native'
 import SettingsButton from "../components/settingsButton";
 import { fonts } from "../conf/fonts";
 
-import { MarkdownView } from 'react-native-markdown-view'
-
 export default class Application extends Component {
 
     constructor(props) {
@@ -49,8 +47,19 @@ export default class Application extends Component {
     }
 
     renderRegularContent() {
+        let data = this.props.navigation.state.params.data;
         return (
-            <View></View>
+            <View style = {local.container}>
+                <Text style = {local.title}>Сводка по сайту:</Text>
+                <View style = {local.infoItemContainer}>
+                    <Text style = {local.instructionsLabel}>Общее количество заказов:</Text>
+                    <Text style = {local.infoValue}> {data.orders ? Object.keys(data.orders).length : 0}</Text>
+                </View>
+                <View style = {local.infoItemContainer}>
+                    <Text style = {local.instructionsLabel}>Общее количество пользователей:</Text>
+                    <Text style = {local.infoValue}> {data.users ? Object.keys(data.users).length : 0}</Text>
+                </View>
+            </View>
         )
     }
 
@@ -65,6 +74,12 @@ export default class Application extends Component {
 }
 
 const local = StyleSheet.create({
+    infoItemContainer: {
+        flexDirection: 'row',
+        paddingVertical: 12,
+        borderBottomColor: '#ddd',
+        borderBottomWidth: 0.6
+    },
     code: {
         fontSize: fonts.fontSize.primary,
         backgroundColor: 'rgba(128, 128, 128, 0.1)',
@@ -89,5 +104,16 @@ const local = StyleSheet.create({
         fontSize: fonts.fontSize.big,
         color: '#333',
         fontFamily: fonts.fontFamily
+    },
+    infoValue: {
+        fontSize: fonts.fontSize.big,
+        color: '#333',
+        fontFamily: fonts.fontFamilyBold
+    },
+    title: {
+        paddingVertical: 10,
+        fontSize: fonts.fontSize.bigger,
+        color: '#333',
+        fontFamily: fonts.fontFamilyBold
     }
 });

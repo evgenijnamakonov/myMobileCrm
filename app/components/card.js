@@ -9,7 +9,11 @@ export default class Card extends Component {
     }
 
     openCard() {
-        this.props.navigation.navigate('Application', { title: this.props.item.name, id: this.props.id })
+        this.props.navigation.navigate('Application', {
+            title: this.props.item.name,
+            data: this.props.item,
+            id: this.props.id
+        })
     }
 
     renderTasks() {
@@ -48,6 +52,8 @@ export default class Card extends Component {
                                 <TouchableOpacity onPress = {() => this.openCard()} style = {style.itemContainer}>
                                     <Text style = {style.addressText}>{this.props.item.orders[item].address}</Text>
                                     <Text style = {style.addressText}>{this.props.item.orders[item].name}</Text>
+                                    <Text style = {style.addressText}>{this.props.item.orders[item].amount} шт.</Text>
+                                    <Text style = {style.addressText}>{this.props.item.orders[item].phone}</Text>
                                 </TouchableOpacity>
                             )
                         }}
@@ -62,8 +68,8 @@ export default class Card extends Component {
             <TouchableOpacity onPress = {() => this.openCard()} style = {style.container}>
                 <Text style = {style.name}>{this.props.item.name}</Text>
                 <View style = {style.infoContainer}>
-                    <Text style = {style.ordersAmountText}>Общее число заказов: {this.getOrdersCount()}</Text>
-                    <Text style = {style.ordersAmountText}>Всего пользователей: {this.getUsersCount()}</Text>
+                    <Text style = {style.ordersAmountText}>Общее число заказов: {this.getOrdersCount() || 0}</Text>
+                    <Text style = {style.ordersAmountText}>Всего пользователей: {this.getUsersCount() || 0}</Text>
                 </View>
                 {this.renderOrders()}
                 {this.renderTasks()}
@@ -99,9 +105,8 @@ const style = StyleSheet.create({
         width: 155,
         height: 100,
         paddingVertical: 10,
-        borderRadius: 3,
         paddingHorizontal: 10,
-        backgroundColor: '#e0f1ff',
+        backgroundColor: '#e7f1ff',
     },
     container: {
         width: '95%',
