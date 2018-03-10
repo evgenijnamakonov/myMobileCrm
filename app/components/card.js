@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { fonts } from "../conf/fonts";
-import { styles } from "../styles";
 
 export default class Card extends Component {
 
@@ -20,6 +19,12 @@ export default class Card extends Component {
     getOrdersCount() {
         if ( this.props.item.orders ) {
             return Object.keys(this.props.item.orders).length
+        }
+    }
+
+    getUsersCount() {
+        if ( this.props.item.users ) {
+            return Object.keys(this.props.item.users).length
         }
     }
 
@@ -54,17 +59,26 @@ export default class Card extends Component {
 
     render() {
         return (
-            <View style = {style.container}>
+            <TouchableOpacity onPress = {() => this.openCard()} style = {style.container}>
                 <Text style = {style.name}>{this.props.item.name}</Text>
-                <Text style = {style.ordersAmountText}>Общее число заказов: {this.getOrdersCount()}</Text>
+                <View style = {style.infoContainer}>
+                    <Text style = {style.ordersAmountText}>Общее число заказов: {this.getOrdersCount()}</Text>
+                    <Text style = {style.ordersAmountText}>Всего пользователей: {this.getUsersCount()}</Text>
+                </View>
                 {this.renderOrders()}
                 {this.renderTasks()}
-            </View>
+            </TouchableOpacity>
         )
     }
 }
 
 const style = StyleSheet.create({
+    infoContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingRight: 10
+    },
     addressText: {
         fontSize: fonts.fontSize.primary,
         fontFamily: fonts.fontFamily,
@@ -78,7 +92,6 @@ const style = StyleSheet.create({
     newOrdersTextWrapper: {
         height: 30,
         justifyContent: 'center',
-
         marginLeft: 10,
     },
     separator: { width: 10 },
@@ -110,11 +123,13 @@ const style = StyleSheet.create({
     },
     name: {
         marginLeft: 10,
+        color: '#333',
         fontSize: fonts.fontSize.giant,
-        fontFamily: fonts.fontFamily
+        fontFamily: fonts.fontFamilyBold
     },
     ordersAmountText: {
         marginLeft: 10,
+        color: '#333',
         fontSize: fonts.fontSize.primary,
         fontFamily: fonts.fontFamily
     }

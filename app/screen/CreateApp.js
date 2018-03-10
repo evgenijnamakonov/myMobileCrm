@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, TextInput, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Alert, Text, TextInput, StyleSheet } from 'react-native';
 import firebase from 'react-native-firebase';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as Actions from "../actions/actions";
 import { theme as colors } from "../conf/colors";
-
-import { NavigationActions } from 'react-navigation'
-
-const resetAction = NavigationActions.reset({
-    index: 0,
-    actions: [
-        NavigationActions.navigate({ routeName: 'MainScreen' })
-    ]
-});
 
 class CreateApp extends Component {
 
@@ -31,17 +22,28 @@ class CreateApp extends Component {
 
     create() {
         let apps = this.database.ref().child('apps').child(this.props.token);
-        apps.push({
-            name:this.state.name,
-        });
-        this.props.navigation.dispatch(resetAction)
+        let id = apps.push({
+            name: this.state.name,
+        }).key;
+        Alert.alert('Создание приложения',
+            'Приложение создано успешно. В карточке приложения вы найдете инструкцию к дальнейшим действиям.',
+            [
+                {
+                    text: 'Ok',
+                    onPress: () => this.props.navigation.navigate({
+                        routeName: 'Application',
+                        params: { title: this.state.name, id: id, token: this.props.token, newApp: true }
+                    }),
+                },
+            ],
+            { cancelable: false });
     }
 
     render() {
-        return(
+        return (
             <View style = {style.container}>
                 <TextInput style = {style.nameInput} placeholder = 'Укажите название приложения/сайта'
-                    onChangeText = {text => this.setState({name: text})} />
+                           onChangeText = {text => this.setState({ name: text })} />
                 <TouchableOpacity onPress = {() => this.create()} style = {style.saveBtn}>
                     <Text style = {style.saveBtnLabel}>Создать</Text>
                 </TouchableOpacity>
@@ -80,14 +82,14 @@ const style = StyleSheet.create({
     }
 });
 
-function mapDispatchToProps( dispatch ) {
-    return bindActionCreators( Actions, dispatch );
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(Actions, dispatch);
 }
 
-function mapStateToProps( state ) {
+function mapStateToProps(state) {
     return {
         token: state.store.token
     }
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( CreateApp );
+export default connect(mapStateToProps, mapDispatchToProps)(CreateApp);
