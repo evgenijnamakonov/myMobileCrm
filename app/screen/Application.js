@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, ART, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions, ART, StyleSheet, Linking } from 'react-native';
 import SettingsButton from "../components/settingsButton";
 import { theme as colors } from "../conf/colors";
 import { fonts } from "../conf/fonts";
+import moment from 'moment';
 
 const {
     Group,
@@ -22,7 +23,36 @@ const d3 = {
 export default class Application extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
+
+        let data = this.props.navigation.state.params.data;
+        let orders = [];
+        Object.keys(data.orders).map((item) => {
+            let search = orders.find((element) => {
+                if ( element.date === data.orders[item].date ) {
+                    return element;
+                }
+            });
+            if ( search ) {
+                search.value = search.value + 1;
+            }
+            else {
+                orders.push({
+                    date: data.orders[item].date,
+                    value: 1
+                })
+            }
+        });
+
+        orders.sort((a, b) => {
+            return new Date(a.date) > new Date(b.date)
+        });
+
+        this.orders = orders;
+    }
+
+    componentDidMount() {
+
     }
 
     static navigationOptions = ({ navigation }) => ({
@@ -30,17 +60,7 @@ export default class Application extends Component {
         headerRight: <SettingsButton id = {navigation.state.params.id} navigation = {navigation} />
     });
 
-    data = [
-        { date: new Date(2018, 1, 8), value: 1 },
-        { date: new Date(2018, 1, 9), value: 7 },
-        { date: new Date(2018, 1, 11), value: 5 },
-    ];
-
-    dAttribute = createLineGraph({
-        data: this.data,
-        width: Dimensions.get('window').width - 40,
-        height: 140,
-    });
+    orders = [];
 
     unique(arr) {
         let obj = {};
@@ -86,32 +106,43 @@ export default class Application extends Component {
     }
 
     renderRegularContent() {
+
         let data = this.props.navigation.state.params.data;
+
+        let dAttribute = this.orders.length > 0
+            ? createLineGraph({
+                data: this.orders,
+                width: Dimensions.get('window').width - 40,
+                height: 140,
+            })
+            : null;
 
         let sorted = [];
 
-        for (let i = 0; i< this.data.length; i++) {
-            if (sorted.indexOf(this.data[i].value) === -1) {
-                sorted.push(this.data[i].value)
+        for ( let i = 0; i < this.orders.length; i++ ) {
+            if ( sorted.indexOf(this.orders[i].value) === -1 ) {
+                sorted.push(this.orders[i].value)
             }
         }
-
-        console.log(sorted)
 
         return (
             <View style = {local.container}>
                 <Text style = {local.title}>Сводка по сайту:</Text>
                 <View style = {local.infoItemContainer}>
-                    <Text style = {local.instructionsLabel}>Общее количество заказов:</Text>
-                    <Text style = {local.infoValue}> {data.orders ? Object.keys(data.orders).length : 0}</Text>
+                    <Text style = {local.instructionsLabel}>Общее количество заказов: </Text>
+                    <Text style = {local.infoValue}>
+                        {data.orders ? Object.keys(data.orders).length : 0}
+                    </Text>
                 </View>
                 <View style = {local.infoItemContainer}>
-                    <Text style = {local.instructionsLabel}>Общее количество пользователей:</Text>
-                    <Text style = {local.infoValue}> {data.users ? Object.keys(data.users).length : 0}</Text>
+                    <Text style = {local.instructionsLabel}>Общее количество пользователей: </Text>
+                    <Text style = {local.infoValue}>
+                        {data.users ? Object.keys(data.users).length : 0}
+                    </Text>
                 </View>
                 <Text style = {local.graphTitle}>График совершения заказов за текущий месяц:</Text>
                 <View style = {local.graphContainer}>
-                    <Graph lineGraph = {this.dAttribute} />
+                    <Graph lineGraph = {dAttribute} />
                     <View style = {local.yAxis} />
                     <View style = {local.yAxisTicks}>
                         {sorted.sort().reverse().map((item) => {
@@ -120,8 +151,8 @@ export default class Application extends Component {
                     </View>
                     <View style = {local.xAxis} />
                     <View style = {local.xAxisTicks}>
-                        {this.data.map((item) => {
-                            return <Text style = {{}}>{item.date.getDate()}</Text>
+                        {this.orders.map((item) => {
+                            return <Text style = {{}}>{new Date(item.date).getDate()}</Text>
                         })}
                     </View>
                 </View>
@@ -164,8 +195,8 @@ export function createLineGraph({ data, width, height, }) {
     const lastDatum = data[data.length - 1];
 
     const scaleX = createScaleX(
-        data[0].date.getTime(),
-        lastDatum.date.getTime(),
+        new Date(data[0].date).getTime(),
+        new Date(lastDatum.date).getTime(),
         width
     );
 
@@ -179,7 +210,7 @@ export function createLineGraph({ data, width, height, }) {
     const scaleY = createScaleY(extentY[0], extentY[1], height);
 
     const lineShape = d3.shape.line()
-        .x((d) => scaleX(d.date.getTime()))
+        .x((d) => scaleX(new Date(d.date).getTime()))
         .y((d) => scaleY(d.value));
 
     return { path: lineShape(data) };
@@ -205,8 +236,8 @@ const local = StyleSheet.create({
         justifyContent: 'space-between',
     },
     yAxisTicks: {
-        height: 140,
-        top: 20,
+        height: 150,
+        top: 12,
         left: 0,
         position: 'absolute',
         justifyContent: 'space-between',
