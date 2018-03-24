@@ -8,6 +8,9 @@ export function store( state = initialState, action ) {
         case types.SET_TOKEN:
             newState.token = action.value;
             return newState;
+        case types.SET_DATA:
+            newState.data = action.value;
+            return newState;
     }
     return state;
 }

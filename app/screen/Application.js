@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, Dimensions, ART, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as Actions from "../actions/actions";
 import SettingsButton from "../components/settingsButton";
 import { theme as colors } from "../conf/colors";
 import { fonts } from "../conf/fonts";
@@ -20,16 +23,18 @@ const d3 = {
     shape,
 };
 
-export default class Application extends Component {
+class Application extends Component {
+
+    orders = [];
 
     constructor(props) {
         super(props);
 
-        let data = this.props.navigation.state.params.data;
+        this.data = this.props.navigation.state.params.data;
         let orders = [];
-        Object.keys(data.orders).map((item) => {
+        Object.keys(this.data.orders).map((item) => {
             let search = orders.find((element) => {
-                if ( element.date === data.orders[item].date ) {
+                if ( element.date === this.data.orders[item].date ) {
                     return element;
                 }
             });
@@ -38,7 +43,7 @@ export default class Application extends Component {
             }
             else {
                 orders.push({
-                    date: data.orders[item].date,
+                    date: this.data.orders[item].date,
                     value: 1
                 })
             }
@@ -56,8 +61,6 @@ export default class Application extends Component {
         headerRight: <SettingsButton id = {navigation.state.params.id} navigation = {navigation} />
     });
 
-    orders = [];
-
     unique(arr) {
         let obj = {};
 
@@ -67,6 +70,41 @@ export default class Application extends Component {
         }
 
         return Object.keys(obj); // или собрать ключи перебором для IE8-
+    }
+
+    componentWillReceiveProps(newProps) {
+        console.log(newProps);
+        newProps.data.map((root) => {
+            Object.keys(root).map((id) => {
+                if (id === this.props.navigation.state.params.id) {
+                    this.data = root[id]
+                }
+            })
+        });
+
+        let orders = [];
+        Object.keys(this.data.orders).map((item) => {
+            let search = orders.find((element) => {
+                if ( element.date === this.data.orders[item].date ) {
+                    return element;
+                }
+            });
+            if ( search ) {
+                search.value = search.value + 1;
+            }
+            else {
+                orders.push({
+                    date: this.data.orders[item].date,
+                    value: 1
+                })
+            }
+        });
+
+        orders.sort((a, b) => {
+            return new Date(a.date) > new Date(b.date)
+        });
+
+        this.orders = orders;
     }
 
     onItemPress(id) {
@@ -107,8 +145,6 @@ export default class Application extends Component {
 
     renderRegularContent() {
 
-        let data = this.props.navigation.state.params.data;
-
         let dAttribute = this.orders.length > 0
             ? createLineGraph({
                 data: this.orders,
@@ -132,13 +168,13 @@ export default class Application extends Component {
                     <View style = {local.infoItemContainer}>
                         <Text style = {local.instructionsLabel}>Общее количество заказов: </Text>
                         <Text style = {local.infoValue}>
-                            {data.orders ? Object.keys(data.orders).length : 0}
+                            {this.data.orders ? Object.keys(this.data.orders).length : 0}
                         </Text>
                     </View>
                     <View style = {local.infoItemContainer}>
                         <Text style = {local.instructionsLabel}>Общее количество пользователей: </Text>
                         <Text style = {local.infoValue}>
-                            {data.users ? Object.keys(data.users).length : 0}
+                            {this.data.users ? Object.keys(this.data.users).length : 0}
                         </Text>
                     </View>
                     <Text style = {local.graphTitle}>График совершения заказов:</Text>
@@ -160,15 +196,15 @@ export default class Application extends Component {
                     <Text style = {local.title}>Необработанные заказы:</Text>
                     <View>
                         {
-                            Object.keys(data.orders).map((item) => {
+                            Object.keys(this.data.orders).map((item) => {
                                 return (
                                     <TouchableOpacity onPress = {() => this.onItemPress(item)} style = {local.orderItemWrapper}>
-                                        <Text style = {local.orderItemText}>{data.orders[item].address}</Text>
-                                        <Text style = {local.orderItemText}>{data.orders[item].name}</Text>
+                                        <Text style = {local.orderItemText}>{this.data.orders[item].address}</Text>
+                                        <Text style = {local.orderItemText}>{this.data.orders[item].name}</Text>
                                         <Text style = {local.orderItemTextBold}>
-                                            {data.orders[item].product} - {data.orders[item].amount} шт.
+                                            {this.data.orders[item].product} - {this.data.orders[item].amount} шт.
                                         </Text>
-                                        <Text style = {local.orderItemText}>{data.orders[item].phone}</Text>
+                                        <Text style = {local.orderItemText}>{this.data.orders[item].phone}</Text>
                                     </TouchableOpacity>
                                 )
                             })
@@ -358,3 +394,16 @@ const local = StyleSheet.create({
         fontFamily: fonts.fontFamilyBold
     }
 });
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(Actions, dispatch);
+}
+
+function mapStateToProps(state) {
+    return {
+        token: state.store.token,
+        data: state.store.data
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Application);

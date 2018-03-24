@@ -6,3 +6,10 @@ export function setToken(value) {
         value,
     }
 }
+
+export function setData(value) {
+    return{
+        type: types.SET_DATA,
+        value,
+    }
+}

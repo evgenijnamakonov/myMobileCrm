@@ -2,6 +2,7 @@
 
 export const initialState = {
     store: {
-        token: ''
+        token: '',
+        data: {}
     }
 };

@@ -29,7 +29,8 @@ class MainScreen extends Component {
             if ( snapshot._value ) {
                 cards.push(snapshot._value);
             }
-            this.setState({ cards: cards, isLoading: false })
+            this.setState({ cards: cards, isLoading: false });
+            this.props.setData(cards)
         });
     }
 
@@ -84,7 +85,7 @@ class MainScreen extends Component {
     renderActivityIndicator() {
         return (
             <View style = {local.placeholderContainer}>
-                <ActivityIndicator size = 'small' color = {colors.btnColor}/>
+                <ActivityIndicator size = 'small' color = {colors.btnColor} />
             </View>
         )
     }
@@ -144,7 +145,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
     return {
-        token: state.store.token
+        token: state.store.token,
+        data: state.store.data
     }
 }
 
