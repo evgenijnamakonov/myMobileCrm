@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, ART, StyleSheet, Linking } from 'react-native';
+import { View, Text, Dimensions, ART, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import SettingsButton from "../components/settingsButton";
 import { theme as colors } from "../conf/colors";
 import { fonts } from "../conf/fonts";
@@ -51,10 +51,6 @@ export default class Application extends Component {
         this.orders = orders;
     }
 
-    componentDidMount() {
-
-    }
-
     static navigationOptions = ({ navigation }) => ({
         title: navigation.state.params.title,
         headerRight: <SettingsButton id = {navigation.state.params.id} navigation = {navigation} />
@@ -71,6 +67,10 @@ export default class Application extends Component {
         }
 
         return Object.keys(obj); // или собрать ключи перебором для IE8-
+    }
+
+    onItemPress(id) {
+
     }
 
     renderInstructions() {
@@ -126,37 +126,56 @@ export default class Application extends Component {
         }
 
         return (
-            <View style = {local.container}>
-                <Text style = {local.title}>Сводка по сайту:</Text>
-                <View style = {local.infoItemContainer}>
-                    <Text style = {local.instructionsLabel}>Общее количество заказов: </Text>
-                    <Text style = {local.infoValue}>
-                        {data.orders ? Object.keys(data.orders).length : 0}
-                    </Text>
-                </View>
-                <View style = {local.infoItemContainer}>
-                    <Text style = {local.instructionsLabel}>Общее количество пользователей: </Text>
-                    <Text style = {local.infoValue}>
-                        {data.users ? Object.keys(data.users).length : 0}
-                    </Text>
-                </View>
-                <Text style = {local.graphTitle}>График совершения заказов за текущий месяц:</Text>
-                <View style = {local.graphContainer}>
-                    <Graph lineGraph = {dAttribute} />
-                    <View style = {local.yAxis} />
-                    <View style = {local.yAxisTicks}>
-                        {sorted.sort().reverse().map((item) => {
-                            return <Text style = {{ fontSize: 14 }}>{item}</Text>
-                        })}
+            <ScrollView style = {local.container} showsVerticalScrollIndicator = {false}>
+                <View style = {local.innerContainer}>
+                    <Text style = {local.title}>Сводка по сайту:</Text>
+                    <View style = {local.infoItemContainer}>
+                        <Text style = {local.instructionsLabel}>Общее количество заказов: </Text>
+                        <Text style = {local.infoValue}>
+                            {data.orders ? Object.keys(data.orders).length : 0}
+                        </Text>
                     </View>
-                    <View style = {local.xAxis} />
-                    <View style = {local.xAxisTicks}>
-                        {this.orders.map((item) => {
-                            return <Text style = {{}}>{new Date(item.date).getDate()}</Text>
-                        })}
+                    <View style = {local.infoItemContainer}>
+                        <Text style = {local.instructionsLabel}>Общее количество пользователей: </Text>
+                        <Text style = {local.infoValue}>
+                            {data.users ? Object.keys(data.users).length : 0}
+                        </Text>
+                    </View>
+                    <Text style = {local.graphTitle}>График совершения заказов:</Text>
+                    <View style = {local.graphContainer}>
+                        <Graph lineGraph = {dAttribute} />
+                        <View style = {local.yAxis} />
+                        <View style = {local.yAxisTicks}>
+                            {sorted.sort().reverse().map((item) => {
+                                return <Text style = {{ fontSize: 14 }}>{item}</Text>
+                            })}
+                        </View>
+                        <View style = {local.xAxis} />
+                        <View style = {local.xAxisTicks}>
+                            {this.orders.map((item) => {
+                                return <Text style = {{}}>{new Date(item.date).getDate()}</Text>
+                            })}
+                        </View>
+                    </View>
+                    <Text style = {local.title}>Необработанные заказы:</Text>
+                    <View>
+                        {
+                            Object.keys(data.orders).map((item) => {
+                                return (
+                                    <TouchableOpacity onPress = {() => this.onItemPress(item)} style = {local.orderItemWrapper}>
+                                        <Text style = {local.orderItemText}>{data.orders[item].address}</Text>
+                                        <Text style = {local.orderItemText}>{data.orders[item].name}</Text>
+                                        <Text style = {local.orderItemTextBold}>
+                                            {data.orders[item].product} - {data.orders[item].amount} шт.
+                                        </Text>
+                                        <Text style = {local.orderItemText}>{data.orders[item].phone}</Text>
+                                    </TouchableOpacity>
+                                )
+                            })
+                        }
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 
@@ -229,6 +248,30 @@ function createScaleY(minY, maxY, height) {
 }
 
 const local = StyleSheet.create({
+    orderItemText: {
+        fontSize: fonts.fontSize.big,
+        color: '#333'
+    },
+    orderItemTextBold: {
+        fontSize: fonts.fontSize.big,
+        fontWeight: '600',
+        color: '#333'
+    },
+    innerContainer: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingTop: 8,
+        paddingHorizontal: 8,
+    },
+    orderItemWrapper: {
+        width: '100%',
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        elevation: 2,
+        borderRadius: 2,
+        marginVertical: 6,
+    },
     xAxisTicks: {
         width: '106%',
         flexDirection: 'row',
@@ -268,7 +311,9 @@ const local = StyleSheet.create({
     },
     infoItemContainer: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
         paddingVertical: 12,
+        paddingRight: 4,
         borderBottomColor: '#ddd',
         borderBottomWidth: 0.6
     },
@@ -287,10 +332,7 @@ const local = StyleSheet.create({
     },
     container: {
         width: '100%',
-        paddingVertical: 8,
-        paddingHorizontal: 8,
         height: '100%',
-        backgroundColor: '#fff',
     },
     instructionsLabel: {
         fontSize: fonts.fontSize.big,
