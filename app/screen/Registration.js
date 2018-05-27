@@ -36,11 +36,7 @@ class Registration extends Component {
     showToast(message) {
         return (
             Platform.OS === 'android' && ToastAndroid.showWithGravityAndOffset(
-                message,
-                ToastAndroid.SHORT,
-                ToastAndroid.BOTTOM,
-                0,
-                32
+                message, ToastAndroid.SHORT, ToastAndroid.BOTTOM, 0, 32
             )
         )
     }
@@ -60,6 +56,12 @@ class Registration extends Component {
         })
     }
 
+    saveEmail(email) {
+        AsyncStorage.setItem('email', email).then(() => {
+            this.props.setEmail(email);
+        })
+    }
+
     singUp() {
         if (this.state.password !== '' && this.state.email !== '') {
             this.setState({ isLoading: true });
@@ -69,6 +71,7 @@ class Registration extends Component {
             ).then((credential) => {
                 this.showToast('Вы успешно авторизовались');
                 this.setState({ isEmailValid: true, isPasswordValid: true });
+                this.saveEmail(credential._user.email);
                 this.saveToken(credential._user.uid)
             }).catch((ExtendedError) => {
                 switch ( ExtendedError.code ) {

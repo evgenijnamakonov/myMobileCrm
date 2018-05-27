@@ -1,3 +1,4 @@
+import moment from "moment/moment";
 import React, { Component } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { fonts } from "../conf/fonts";
@@ -50,10 +51,16 @@ export default class Card extends Component {
                         renderItem = {({ item }) => {
                             return (
                                 <TouchableOpacity onPress = {() => this.openCard()} style = {style.itemContainer}>
-                                    <Text style = {style.addressText}>{this.props.item.orders[item].address}</Text>
-                                    <Text style = {style.addressText}>{this.props.item.orders[item].name}</Text>
-                                    <Text style = {style.addressText}>{this.props.item.orders[item].amount} шт.</Text>
-                                    <Text style = {style.addressText}>{this.props.item.orders[item].phone}</Text>
+                                    <Text numberOfLines = {1}
+                                          style = {style.addressText}>{moment(this.props.item.orders[item].utc).format('DD MMMM YYYY, HH:mm')}</Text>
+                                    <Text numberOfLines = {1}
+                                          style = {style.addressText}>{this.props.item.orders[item].address}</Text>
+                                    <Text numberOfLines = {1}
+                                          style = {style.addressText}>{this.props.item.orders[item].name}</Text>
+                                    <Text numberOfLines = {1}
+                                          style = {style.addressText}>{this.props.item.orders[item].product} {this.props.item.orders[item].amount} шт.</Text>
+                                    <Text numberOfLines = {1}
+                                          style = {style.addressText}>{this.props.item.orders[item].phone}</Text>
                                 </TouchableOpacity>
                             )
                         }}

@@ -9,4 +9,6 @@ target 'myMobileCrm' do
 
   # Pods for myMobileCrm
 
+  pod 'react-native-mail', :path => '../node_modules/react-native-mail'
+
 end

@@ -8,7 +8,7 @@ import Community from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme as colors, theme } from "../conf/colors";
 
 import firebase from 'react-native-firebase';
-
+import { sendEmail } from '../api/api';
 import Account from "../components/accountBtn";
 import { styles } from "../styles";
 

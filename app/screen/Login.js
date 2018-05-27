@@ -38,11 +38,7 @@ class Login extends Component {
     showToast(message) {
         return (
             Platform.OS === 'android' && ToastAndroid.showWithGravityAndOffset(
-                message,
-                ToastAndroid.SHORT,
-                ToastAndroid.BOTTOM,
-                0,
-                32
+                message, ToastAndroid.SHORT, ToastAndroid.BOTTOM, 0, 32
             )
         )
     }
@@ -59,13 +55,20 @@ class Login extends Component {
         })
     }
 
+    saveEmail(email) {
+        AsyncStorage.setItem('email', email).then(() => {
+            this.props.setEmail(email);
+        })
+    }
+
     logIn() {
         if ( this.state.password !== '' && this.state.email !== '' ) {
             this.setState({ isLoading: true });
             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((credential) => {
                 this.showToast('Вы успешно авторизовались');
                 this.setState({ isEmailValid: true, isPasswordValid: true });
-                this.saveToken(credential._user.uid)
+                this.saveEmail(credential._user.email);
+                this.saveToken(credential._user.uid);
             }).catch((ExtendedError) => {
                 switch ( ExtendedError.code ) {
                     case 'auth/invalid-email':
@@ -116,8 +119,8 @@ class Login extends Component {
                     <TouchableOpacity onPress = {() => this.logIn()} style = {styles.loginButton}>
                         {
                             this.state.isLoading
-                                ? <ActivityIndicator size = 'small' color = '#fff' />
-                                : <Text style = {styles.loginButtonLabel}>Войти</Text>
+                            ? <ActivityIndicator size = 'small' color = '#fff' />
+                            : <Text style = {styles.loginButtonLabel}>Войти</Text>
                         }
                     </TouchableOpacity>
                     <TouchableOpacity onPress = {() => this.singUp()} style = {styles.singUpRef}>
@@ -129,12 +132,12 @@ class Login extends Component {
     }
 }
 
-function mapDispatchToProps( dispatch ) {
-    return bindActionCreators( Actions, dispatch );
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(Actions, dispatch);
 }
 
-function mapStateToProps( state ) {
+function mapStateToProps(state) {
     return {}
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( Login );
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

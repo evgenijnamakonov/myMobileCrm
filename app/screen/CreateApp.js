@@ -25,24 +25,29 @@ class CreateApp extends Component {
         let id = apps.push({
             name: this.state.name,
         }).key;
-        Alert.alert('Создание приложения',
-            'Приложение создано успешно. В карточке приложения вы найдете инструкцию к дальнейшим действиям.',
-            [
-                {
-                    text: 'Ok',
-                    onPress: () => this.props.navigation.navigate({
-                        routeName: 'Application',
-                        params: { title: this.state.name, id: id, token: this.props.token, newApp: true }
-                    }),
-                },
-            ],
-            { cancelable: false });
+
+        if ( id ) {
+
+            Alert.alert('Создание приложения',
+                'Приложение создано успешно. Следуйте инструкциям на следующем экране.',
+                [
+                    {
+                        text: 'ок',
+                        onPress: () => this.props.navigation.navigate({
+                            routeName: 'Application',
+                            params: { title: this.state.name, id: id, token: this.props.token, newApp: true }
+                        }),
+                    },
+                ],
+                { cancelable: false });
+        }
     }
 
     render() {
         return (
             <View style = {style.container}>
                 <TextInput style = {style.nameInput} placeholder = 'Укажите название приложения/сайта'
+                           underlineColorAndroid = 'transparent'
                            onChangeText = {text => this.setState({ name: text })} />
                 <TouchableOpacity onPress = {() => this.create()} style = {style.saveBtn}>
                     <Text style = {style.saveBtnLabel}>Создать</Text>
@@ -56,21 +61,25 @@ const style = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#fff',
         paddingHorizontal: 12,
         paddingVertical: 8,
     },
     nameInput: {
-        width: 250,
+        width: '90%',
+        textAlign: 'center',
+        borderRadius: 6,
+        borderWidth: 1.5,
+        borderColor: '#ddd',
         height: 50,
     },
     saveBtn: {
         width: 180,
         height: 42,
         borderRadius: 4,
-        position: 'absolute',
-        bottom: 12,
-        left: '26%',
+        marginTop: 12,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: colors.btnColor,
@@ -88,7 +97,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
     return {
-        token: state.store.token
+        token: state.store.token,
+        email: state.store.email
     }
 }
 

@@ -7,6 +7,13 @@ export function setToken(value) {
     }
 }
 
+export function setEmail(value) {
+    return{
+        type: types.SET_EMAIL,
+        value,
+    }
+}
+
 export function setData(value) {
     return{
         type: types.SET_DATA,

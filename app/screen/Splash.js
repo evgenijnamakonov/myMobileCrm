@@ -13,15 +13,18 @@ class Splash extends Component {
 
     componentDidMount() {
         AsyncStorage.getItem('token').then((token) => {
-            if ( token ) {
-                this.props.setToken(token);
-                this.reset('MainScreen')
-            }
-            else {
-                this.reset('Login')
-            }
+            AsyncStorage.getItem('email').then((email) => {
+                if ( token && email ) {
+                    this.props.setToken(token);
+                    this.props.setEmail(email);
+                    this.reset('MainScreen')
+                }
+                else {
+                    this.reset('Login')
+                }
+            })
         });
-    }
+    };
 
     reset(routeName) {
         this.props.navigation.dispatch(NavigationActions.reset({
@@ -36,12 +39,21 @@ class Splash extends Component {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function
+
+mapDispatchToProps(dispatch) {
     return bindActionCreators(Actions, dispatch);
 }
 
-function mapStateToProps(state) {
+function
+
+mapStateToProps(state) {
     return {}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Splash);
+export default connect(mapStateToProps, mapDispatchToProps)
+
+(
+    Splash
+)
+;

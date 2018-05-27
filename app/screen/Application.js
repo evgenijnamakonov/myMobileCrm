@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, ART, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, Dimensions, ART, Alert, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import firebase from 'react-native-firebase';
+import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Actions from "../actions/actions";
 import SettingsButton from "../components/settingsButton";
 import { theme as colors } from "../conf/colors";
@@ -31,29 +33,39 @@ class Application extends Component {
         super(props);
 
         this.data = this.props.navigation.state.params.data;
+
         let orders = [];
-        Object.keys(this.data.orders).map((item) => {
-            let search = orders.find((element) => {
-                if ( element.date === this.data.orders[item].date ) {
-                    return element;
+
+        try {
+            Object.keys(this.data.orders).map((item) => {
+                let search = orders.find((element) => {
+                    if ( element.date === this.data.orders[item].date ) {
+                        return element;
+                    }
+                });
+                if ( search ) {
+                    search.value = search.value + 1;
+                }
+                else {
+                    orders.push({
+                        date: this.data.orders[item].date,
+                        value: 1
+                    })
                 }
             });
-            if ( search ) {
-                search.value = search.value + 1;
-            }
-            else {
-                orders.push({
-                    date: this.data.orders[item].date,
-                    value: 1
-                })
-            }
-        });
+        }
+        catch ( e ) {
+        }
 
         orders.sort((a, b) => {
-            return new Date(a.date) > new Date(b.date)
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
         });
 
         this.orders = orders;
+    }
+
+    componentDidMount() {
+        this.database = firebase.database()
     }
 
     static navigationOptions = ({ navigation }) => ({
@@ -66,54 +78,118 @@ class Application extends Component {
 
         for ( let i = 0; i < arr.length; i++ ) {
             let str = arr[i];
-            obj[str] = true; // запомнить строку в виде свойства объекта
+            obj[str] = true;
         }
 
-        return Object.keys(obj); // или собрать ключи перебором для IE8-
+        return Object.keys(obj);
     }
 
     componentWillReceiveProps(newProps) {
         console.log(newProps);
+
         newProps.data.map((root) => {
             Object.keys(root).map((id) => {
-                if (id === this.props.navigation.state.params.id) {
+                if ( id === this.props.navigation.state.params.id ) {
                     this.data = root[id]
                 }
             })
         });
 
         let orders = [];
-        Object.keys(this.data.orders).map((item) => {
-            let search = orders.find((element) => {
-                if ( element.date === this.data.orders[item].date ) {
-                    return element;
+
+        try {
+            Object.keys(this.data.orders).map((item) => {
+                let search = orders.find((element) => {
+                    if ( element.date === this.data.orders[item].date ) {
+                        return element;
+                    }
+                });
+                if ( search ) {
+                    search.value = search.value + 1;
+                }
+                else {
+                    orders.push({
+                        date: this.data.orders[item].date,
+                        value: 1
+                    })
                 }
             });
-            if ( search ) {
-                search.value = search.value + 1;
-            }
-            else {
-                orders.push({
-                    date: this.data.orders[item].date,
-                    value: 1
-                })
-            }
-        });
+        }
+        catch ( e ) {
+        }
 
         orders.sort((a, b) => {
-            return new Date(a.date) > new Date(b.date)
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
         });
 
         this.orders = orders;
     }
 
-    onItemPress(id) {
+    markItem(id, status) {
+        this.database.ref(`apps/${this.props.token}/${this.props.navigation.state.params.id}/orders/${id}`).update({
+            ...this.data.orders[id],
+            status: status
+        });
+    }
 
+    removeItem(id) {
+        Alert.alert(`Удаление`, `Удалить этот заказ из списка? Это действие необратимо.`, [
+            { text: 'Отмена', style: 'cancel' },
+            {
+                text: 'Удалить',
+                onPress: () => this.database.ref(`apps/${this.props.token}/${this.props.navigation.state.params.id}/orders/${id}`).remove()
+            }
+        ])
+    }
+
+    callPhone(id) {
+        Alert.alert(`Звонок`, `Позвонить по указанному номеру телефона?`, [
+            { text: 'Отмена', style: 'cancel' },
+            {
+                text: 'Позвонить',
+                onPress: () => {
+                    Linking.openURL(`tel: ${this.data.orders[id].phone}`)
+                }
+            }
+        ])
+    }
+
+    onItemPress(id) {
+        Alert.alert(`Оставить пометку`, `Пометить выбранный заказ как:`, [
+            { text: 'Отмена', style: 'cancel' },
+            { text: 'Новый', onPress: () => this.markItem(id, 'new') },
+            { text: 'Просмотренный', onPress: () => this.markItem(id, 'checked') }
+        ])
+    }
+
+    getBackground(id) {
+        if ( this.data.orders[id].status === 'new' ) {
+            return '#f2ffeb'
+        }
+        else {
+            return '#fff'
+        }
+    }
+
+    renderRemoveButton(id) {
+        return (
+            <TouchableOpacity onPress = {() => this.removeItem(id)} style = {local.removeBtn}>
+                <Material name = 'close' style = {local.removeIcon} />
+            </TouchableOpacity>
+        )
+    }
+
+    renderCallButton(id) {
+        return (
+            <TouchableOpacity onPress = {() => this.callPhone(id)} style = {local.callBtn}>
+                <Material name = 'phone' style = {local.callIcon} />
+            </TouchableOpacity>
+        )
     }
 
     renderInstructions() {
         return (
-            <View style = {local.container}>
+            <View style = {[local.container, { paddingHorizontal: 12, paddingVertical: 12 }]}>
                 <Text selectable = {true}>
                     <Text style = {local.instructionsLabel}>Вставьте эти строчки в ваш </Text>
                     <Text style = {local.code}>index.html</Text>
@@ -128,7 +204,7 @@ class Application extends Component {
                     </Text>
                 </Text>
                 <Text>
-                    <Text style = {local.instructionsLabel}>Скачайте этот файл и перенесите в папку с проектом: </Text>
+                    <Text style = {local.instructionsLabel}>Скачайте этот файл и поместите в корень проекта: </Text>
                     <Text
                         onPress = {() => Linking.openURL('https://github.com/evgenijnamakonov/evgenijnamakonov.github.io')}
                         style = {local.link}>myMobileCrm.js</Text>
@@ -145,13 +221,21 @@ class Application extends Component {
 
     renderRegularContent() {
 
+        if ( !this.data.orders ) {
+            return (
+                <View style = {local.phView}>
+                    <Text style = {local.phText}>Пока не было никакой активности на этом сайте</Text>
+                </View>
+            )
+        }
+
         let dAttribute = this.orders.length > 0
-            ? createLineGraph({
+                         ? createLineGraph({
                 data: this.orders,
                 width: Dimensions.get('window').width - 40,
                 height: 140,
             })
-            : null;
+                         : null;
 
         let sorted = [];
 
@@ -189,22 +273,39 @@ class Application extends Component {
                         <View style = {local.xAxis} />
                         <View style = {local.xAxisTicks}>
                             {this.orders.map((item) => {
-                                return <Text style = {{}}>{new Date(item.date).getDate()}</Text>
+                                return <Text style = {{}}>{moment(item.date).format('MM.DD')}</Text>
                             })}
                         </View>
                     </View>
-                    <Text style = {local.title}>Необработанные заказы:</Text>
+                    <Text style = {local.title}>Непросмотренные заказы:</Text>
                     <View>
                         {
-                            Object.keys(this.data.orders).map((item) => {
+                            Object.keys(this.data.orders).sort((a, b) => {
+                                return new Date(this.data.orders[b].utc).getTime() - new Date(this.data.orders[a].utc).getTime()
+                            }).map((item) => {
                                 return (
-                                    <TouchableOpacity onPress = {() => this.onItemPress(item)} style = {local.orderItemWrapper}>
-                                        <Text style = {local.orderItemText}>{this.data.orders[item].address}</Text>
-                                        <Text style = {local.orderItemText}>{this.data.orders[item].name}</Text>
-                                        <Text style = {local.orderItemTextBold}>
-                                            {this.data.orders[item].product} - {this.data.orders[item].amount} шт.
-                                        </Text>
-                                        <Text style = {local.orderItemText}>{this.data.orders[item].phone}</Text>
+                                    <TouchableOpacity onPress = {() => this.onItemPress(item)}
+                                                      activeOpacity = {.8}
+                                                      style = {[local.orderItemWrapper, {
+                                                          backgroundColor: this.getBackground(item),
+                                                      }]}>
+                                        <View style = {{ flex: 1 }}>
+                                            <Text style = {local.orderItemText}>Дата
+                                                                                создания: {moment(this.data.orders[item].utc).format('DD MMMM YYYY, HH:mm')}</Text>
+                                            <Text
+                                                style = {local.orderItemText}>Адрес: {this.data.orders[item].address}</Text>
+                                            <Text
+                                                style = {local.orderItemText}>Имя: {this.data.orders[item].name}</Text>
+                                            <Text style = {local.orderItemTextBold}>
+                                                {this.data.orders[item].product} - {this.data.orders[item].amount} шт.
+                                            </Text>
+                                            <Text
+                                                style = {local.orderItemText}>Телефон: {this.data.orders[item].phone}</Text>
+                                        </View>
+                                        <View style = {{ height: '100%', width: 40, }}>
+                                            {this.renderRemoveButton(item)}
+                                            {this.renderCallButton(item)}
+                                        </View>
                                     </TouchableOpacity>
                                 )
                             })
@@ -267,7 +368,6 @@ export function createLineGraph({ data, width, height, }) {
     const lineShape = d3.shape.line()
         .x((d) => scaleX(new Date(d.date).getTime()))
         .y((d) => scaleY(d.value));
-
     return { path: lineShape(data) };
 }
 
@@ -284,13 +384,39 @@ function createScaleY(minY, maxY, height) {
 }
 
 const local = StyleSheet.create({
+    phText: { color: '#999', fontSize: 22, textAlign: 'center' },
+    phView: { flex: 1, paddingHorizontal: 12, alignItems: 'center', justifyContent: 'center' },
+    removeIcon: { fontSize: 18, color: '#c63e27' },
+    callIcon: { fontSize: 18, color: '#2599c6' },
+    removeBtn: {
+        height: 40,
+        justifyContent: 'center',
+        marginBottom: 32,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#aaa',
+        alignItems: 'center'
+    },
+    callBtn: {
+        height: 40,
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderRadius: 20,
+        borderColor: '#aaa',
+        alignItems: 'center'
+    },
+    checkedMarkerText: { color: '#a7a8a8', fontSize: 16 },
+    newMarkerText: { color: '#2dd93e', fontSize: 16 },
+    markerView: { position: 'absolute', bottom: 8, right: 12 },
     orderItemText: {
         fontSize: fonts.fontSize.big,
+        maxWidth: '95%',
         color: '#333'
     },
     orderItemTextBold: {
         fontSize: fonts.fontSize.big,
         fontWeight: '600',
+        maxWidth: '95%',
         color: '#333'
     },
     innerContainer: {
@@ -303,6 +429,7 @@ const local = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 12,
         paddingVertical: 12,
+        flexDirection: 'row',
         backgroundColor: '#fff',
         elevation: 2,
         borderRadius: 2,
@@ -368,6 +495,7 @@ const local = StyleSheet.create({
     },
     container: {
         width: '100%',
+        backgroundColor: '#fff',
         height: '100%',
     },
     instructionsLabel: {
